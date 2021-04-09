@@ -39,14 +39,11 @@ configure = [
     { cmd = "QURCCFG", subcmd = "urcport", expect = "\"all\"" },
     { cmd = "QGPS", value = "1" },
     { cmd = "QSCLK", value = "1" },
-    { cmd = "QCFG", subcmd = "urc/cache", value = "0" }
 ]
 suspend = [
     { cmd = "QGPSEND" },
-    { cmd = "QCFG", subcmd = "urc/cache", value = "1" }
 ]
 resume = [
-    { cmd = "QCFG", subcmd = "urc/cache", value = "0" },
     { cmd = "QGPS", value = "1" }
 ]
 reset = [ { cmd = "CFUN", value = "1,1" } ]
