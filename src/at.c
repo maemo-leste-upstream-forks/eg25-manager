@@ -77,12 +77,14 @@ static gboolean send_at_command(struct EG25Manager *manager)
         g_message("Sending command: %s", g_strstrip(command));
     } else if (manager->modem_state < EG25_STATE_CONFIGURED) {
         if (manager->modem_iface == MODEM_IFACE_MODEMMANAGER) {
+#ifdef HAVE_MMGLIB
             MMModemState modem_state = mm_modem_get_state(manager->mm_modem);
 
             if (manager->mm_modem && modem_state >= MM_MODEM_STATE_REGISTERED)
                 modem_update_state(manager, modem_state);
             else
                 manager->modem_state = EG25_STATE_CONFIGURED;
+#endif
         } else {
             manager->modem_state = EG25_STATE_CONFIGURED;
         }

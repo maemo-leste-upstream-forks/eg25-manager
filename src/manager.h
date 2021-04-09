@@ -9,7 +9,9 @@
 #include <glib.h>
 #include <gpiod.h>
 #include <gudev/gudev.h>
+#ifdef HAVE_MMGLIB
 #include <libmm-glib.h>
+#endif
 #include <libgdbofono/gdbo-manager.h>
 
 #include "toml.h"
@@ -51,9 +53,10 @@ struct EG25Manager {
 
     enum ModemIface modem_iface;
     guint mm_watch;
+#ifdef HAVE_MMGLIB
     MMManager *mm_manager;
     MMModem *mm_modem;
-
+#endif
     guint ofono_watch;
     GDBOManager *ofono_manager;
     GDBusConnection *ofono_connection;
@@ -80,4 +83,6 @@ void modem_suspend_pre(struct EG25Manager *data);
 void modem_suspend_post(struct EG25Manager *data);
 void modem_resume_pre(struct EG25Manager *data);
 void modem_resume_post(struct EG25Manager *data);
+#ifdef HAVE_MMGLIB
 void modem_update_state(struct EG25Manager *data, MMModemState state);
+#endif

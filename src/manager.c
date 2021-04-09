@@ -7,7 +7,11 @@
 #include "at.h"
 #include "gpio.h"
 #include "manager.h"
+
+#ifdef HAVE_MMGLIB
 #include "mm-iface.h"
+#endif
+
 #include "ofono-iface.h"
 #include "suspend.h"
 #include "udev.h"
@@ -35,7 +39,9 @@ static gboolean quit_app(struct EG25Manager *manager)
     g_message("Request to quit...");
 
     at_destroy(manager);
+#ifdef HAVE_MMGLIB
     mm_iface_destroy(manager);
+#endif
     ofono_iface_destroy(manager);
     suspend_destroy(manager);
     udev_destroy(manager);
@@ -100,6 +106,7 @@ static gboolean modem_start(struct EG25Manager *manager)
     return FALSE;
 }
 
+#ifdef HAVE_MMGLIB
 void modem_update_state(struct EG25Manager *manager, MMModemState state)
 {
     switch (state) {
@@ -116,6 +123,7 @@ void modem_update_state(struct EG25Manager *manager, MMModemState state)
         break;
     }
 }
+#endif
 
 void modem_configure(struct EG25Manager *manager)
 {
@@ -328,7 +336,9 @@ int main(int argc, char *argv[])
 
     at_init(&manager, toml_table_in(toml_config, "at"));
     gpio_init(&manager, toml_table_in(toml_config, "gpio"));
+#ifdef HAVE_MMGLIB
     mm_iface_init(&manager, toml_table_in(toml_config, "mm-iface"));
+#endif
     ofono_iface_init(&manager);
     suspend_init(&manager, toml_table_in(toml_config, "suspend"));
     udev_init(&manager, toml_table_in(toml_config, "udev"));

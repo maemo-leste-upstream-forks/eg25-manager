@@ -47,13 +47,18 @@ eg25_datadir = join_paths(full_datadir, meson.project_name())
 add_global_arguments('-D@0@="@1@"'.format('EG25_CONFDIR', eg25_confdir), language : 'c')
 add_global_arguments('-D@0@="@1@"'.format('EG25_DATADIR', eg25_datadir), language : 'c')
 
+mmglib_dep = dependency('mm-glib', required : false)
+if mmglib_dep.found()
+  add_global_arguments('-DHAVE_MMGLIB=1', language : 'c')
+endif
+
 mgr_deps = [
     dependency('glib-2.0'),
     dependency('gio-unix-2.0'),
     dependency('gudev-1.0'),
     dependency('libgpiod'),
     dependency('libusb-1.0'),
-    dependency('mm-glib'),
+    mmglib_dep,
 ]
 
 subdir('data')

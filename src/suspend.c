@@ -170,7 +170,11 @@ static void signal_cb(GDBusProxy *proxy,
         g_message("system is resuming");
         take_inhibitor(manager, FALSE);
         modem_resume_pre(manager);
-        if (manager->mm_modem || manager->modem_iface == MODEM_IFACE_OFONO) {
+        if (
+#ifdef HAVE_MMGLIB
+            manager->mm_modem || 
+#endif
+            manager->modem_iface == MODEM_IFACE_OFONO) {
             /*
              * On some systems ModemManager doesn't handle suspend/resume, so
              * we still have a valid/managed modem when resuming. In this case,
