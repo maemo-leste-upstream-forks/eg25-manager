@@ -183,6 +183,9 @@ static void mm_iface_clean(struct EG25Manager *manager)
         g_free(manager->modem_usb_id);
         manager->modem_usb_id = NULL;
     }
+    if (manager->modem_iface == MODEM_IFACE_MODEMMANAGER) {
+        manager->modem_iface = MODEM_IFACE_NONE;
+    }
 }
 
 static void mm_vanished_cb(GDBusConnection    *connection,
