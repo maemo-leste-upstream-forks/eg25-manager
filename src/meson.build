@@ -15,6 +15,7 @@ src = [
         'suspend.c', 'suspend.h',
         'toml.c', 'toml.h',
         'udev.c', 'udev.h',
+        gdbofono_headers,
 ]
 
 if mmglib_dep.found()
