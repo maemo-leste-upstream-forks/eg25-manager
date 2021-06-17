@@ -6,6 +6,8 @@
 
 #include "gpio.h"
 
+#include <unistd.h>
+
 #define GPIO_CHIP1_LABEL "1c20800.pinctrl"
 #define GPIO_CHIP2_LABEL "1f02c00.pinctrl"
 
@@ -52,7 +54,6 @@ int gpio_sequence_shutdown(struct EG25Manager *manager)
 int gpio_sequence_suspend(struct EG25Manager *manager)
 {
     gpiod_line_set_value(manager->gpio_out[GPIO_OUT_APREADY], 1);
-    gpiod_line_set_value(manager->gpio_out[GPIO_OUT_DTR], 1);
 
     g_message("Executed suspend sequence");
 
@@ -62,9 +63,28 @@ int gpio_sequence_suspend(struct EG25Manager *manager)
 int gpio_sequence_resume(struct EG25Manager *manager)
 {
     gpiod_line_set_value(manager->gpio_out[GPIO_OUT_APREADY], 0);
-    gpiod_line_set_value(manager->gpio_out[GPIO_OUT_DTR], 0);
 
     g_message("Executed resume sequence");
+
+    return 0;
+}
+
+int gpio_sequence_wake(struct EG25Manager *manager)
+{
+    gpiod_line_set_value(manager->gpio_out[GPIO_OUT_DTR], 0);
+
+    /* Give the modem 5ms to wake from soft sleep */
+    usleep(5000);
+
+    g_message("Executed soft wake sequence");
+
+    return 0;
+}
+
+int gpio_sequence_sleep(struct EG25Manager *manager)
+{
+    gpiod_line_set_value(manager->gpio_out[GPIO_OUT_DTR], 1);
+    g_message("Executed soft sleep sequence");
 
     return 0;
 }

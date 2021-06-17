@@ -6,6 +6,7 @@
 
 #include "at.h"
 #include "suspend.h"
+#include "gpio.h"
 
 #include <fcntl.h>
 #include <stdio.h>
@@ -59,6 +60,10 @@ static gboolean send_at_command(struct EG25Manager *manager)
     int ret, len = 0;
 
     if (at_cmd) {
+    	/* Wake up the modem from soft sleep before sending an AT command */
+    	gpio_sequence_wake(manager);
+
+	/* Send AT command */
         if (at_cmd->subcmd == NULL && at_cmd->value == NULL && at_cmd->expected == NULL)
             len = sprintf(command, "AT+%s\r\n", at_cmd->cmd);
         else if (at_cmd->subcmd == NULL && at_cmd->value == NULL)
@@ -75,23 +80,28 @@ static gboolean send_at_command(struct EG25Manager *manager)
             g_warning("Couldn't write full AT command: wrote %d/%d bytes", ret, len);
 
         g_message("Sending command: %s", g_strstrip(command));
-    } else if (manager->modem_state < EG25_STATE_CONFIGURED) {
-        if (manager->modem_iface == MODEM_IFACE_MODEMMANAGER) {
+    } else {
+    	/* Allow the modem to enter soft sleep again when we sent the AT command*/
+    	gpio_sequence_sleep(manager);
+	
+	if (manager->modem_state < EG25_STATE_CONFIGURED) {
+	    if (manager->modem_iface == MODEM_IFACE_MODEMMANAGER) {
 #ifdef HAVE_MMGLIB
-            MMModemState modem_state = mm_modem_get_state(manager->mm_modem);
+                MMModemState modem_state = mm_modem_get_state(manager->mm_modem);
 
-            if (manager->mm_modem && modem_state >= MM_MODEM_STATE_REGISTERED)
-                modem_update_state(manager, modem_state);
-            else
-                manager->modem_state = EG25_STATE_CONFIGURED;
+		if (manager->mm_modem && modem_state >= MM_MODEM_STATE_REGISTERED)
+                    modem_update_state(manager, modem_state);
+		else
+                    manager->modem_state = EG25_STATE_CONFIGURED;
 #endif
-        } else {
-            manager->modem_state = EG25_STATE_CONFIGURED;
+            } else {
+                manager->modem_state = EG25_STATE_CONFIGURED;
+	    }
+        } else if (manager->modem_state == EG25_STATE_SUSPENDING) {
+            modem_suspend_post(manager);
+        } else if (manager->modem_state == EG25_STATE_RESETTING) {
+            manager->modem_state = EG25_STATE_POWERED;
         }
-    } else if (manager->modem_state == EG25_STATE_SUSPENDING) {
-        modem_suspend_post(manager);
-    } else if (manager->modem_state == EG25_STATE_RESETTING) {
-        manager->modem_state = EG25_STATE_POWERED;
     }
 
     return FALSE;
