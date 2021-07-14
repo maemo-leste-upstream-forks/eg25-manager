@@ -1,3 +1,9 @@
+eg25-manager (0.3.0.1-1) unstable; urgency=medium
+
+  * Add Leste debian directory.
+
+ -- Ivan J. <parazyd@dyne.org>  Wed, 14 Jul 2021 09:33:58 +0200
+
 eg25-manager (0.3.0-1) unstable; urgency=medium
 
   * New upstream version 0.3.0
