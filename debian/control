@@ -1,0 +1,27 @@
+Source: eg25-manager
+Section: libs
+Priority: optional
+Maintainer: Ivan J. <parazyd@dyne.org>
+Standards-Version: 4.3.0
+Rules-Requires-Root: no
+Build-Depends: debhelper-compat (= 12),
+               libglib2.0-dev,
+               libgpiod-dev,
+               libgudev-1.0-dev,
+               libmm-glib-dev,
+               libusb-1.0-0-dev,
+               meson,
+Homepage: https://gitlab.com/mobian1/devices/eg25-manager
+Vcs-Git: https://github.com/maemo-leste/maemo-leste-upstream-forks/eg25-manager
+Vcs-Browser: https://github.com/maemo-leste/maemo-leste-upstream-forks/eg25-manager
+
+Package: eg25-manager
+Architecture: arm64
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         ofono,
+Conflicts: pinephone-modem-scripts,
+Replaces: pinephone-modem-scripts,
+Description: Manager daemon for the Quectel EG25 mobile broadband modem
+ A set of scripts for the PinePhone modem, allowing to power on/off the modem,
+ and configure its audio interface to work properly with the A64 audio codec.
